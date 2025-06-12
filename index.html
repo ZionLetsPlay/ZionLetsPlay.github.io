@@ -22,6 +22,11 @@
       height: 300px;
       overflow: hidden;
     }
+    #status {
+      color: yellow;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
     #messages {
       color: white;
       font-size: 16px;
@@ -38,6 +43,7 @@
 <body>
 
   <div id="chat-frame">
+    <div id="status">Connecting...</div>
     <div id="messages"></div>
   </div>
 
@@ -46,6 +52,11 @@
     const socket = io("https://discord-live-chat-zionletsplayoff.replit.app");
 
     const messages = document.getElementById("messages");
+    const status = document.getElementById("status");
+
+    socket.on("status", (text) => {
+      status.textContent = text;
+    });
 
     socket.on("chat", (data) => {
       const msg = document.createElement("div");
