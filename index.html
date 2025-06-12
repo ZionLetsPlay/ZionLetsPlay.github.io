@@ -19,8 +19,10 @@
       padding: 20px;
       width: 90%;
       max-width: 600px;
-      height: 300px;
+      height: 400px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     #status {
       color: yellow;
@@ -31,12 +33,12 @@
       color: white;
       font-size: 16px;
       line-height: 1.4;
-      position: absolute;
-      bottom: 0;
-      width: 100%;
+      overflow-y: auto;
+      flex-grow: 1;
     }
     .msg {
-      transition: transform 10s linear;
+      margin-bottom: 5px;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -60,16 +62,28 @@
 
     socket.on("chat", (data) => {
       const msg = document.createElement("div");
-      msg.textContent = `${data.username}: ${data.content}`;
       msg.className = "msg";
-      msg.style.marginTop = "8px";
+      msg.textContent = `${data.username}: ${data.content}`;
       messages.appendChild(msg);
-      requestAnimationFrame(() => {
-        msg.style.transform = "translateY(-400px)";
+
+      // Scroll to bottom
+      messages.scrollTop = messages.scrollHeight;
+
+      // Trim to 40 messages
+      if (messages.children.length > 40) {
+        messages.removeChild(messages.children[0]);
+      }
+    });
+
+    socket.on("log", (log) => {
+      messages.innerHTML = "";
+      log.forEach((data) => {
+        const msg = document.createElement("div");
+        msg.className = "msg";
+        msg.textContent = `${data.username}: ${data.content}`;
+        messages.appendChild(msg);
       });
-      setTimeout(() => {
-        msg.remove();
-      }, 10000);
+      messages.scrollTop = messages.scrollHeight;
     });
   </script>
 
